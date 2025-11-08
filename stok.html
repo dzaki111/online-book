@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Book Zaki - Manajemen Stok</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* Definisi Variabel Warna */
+        :root {
+            --primary-color: #ffc107; --secondary-color: #008080; --text-color: #333;
+            --bg-white: #ffffff; --bg-light: #f4f4f4; --success-color: #28a745; --danger-color: #dc3545;
+        }
+
+        /* GLOBAL STYLES */
+        body { font-family: Arial, sans-serif; background-color: var(--bg-light); color: var(--text-color); margin: 0; padding-top: 80px; padding-bottom: 70px; min-height: 100vh; }
+        main { padding: 20px; }
+        h1, h2, h3 { color: var(--secondary-color); margin-top: 0; }
+        .card { background-color: var(--bg-white); padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); }
+        .text-center { text-align: center; } .text-right { text-align: right; }
+        
+        /* INPUTS AND FORMS */
+        input[type="text"], input[type="email"], input[type="number"], textarea, select { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1em; }
+        
+        /* BUTTONS */
+        .btn-primary, .btn-success, .btn-danger { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; margin-top: 10px; }
+        .btn-success { background-color: var(--success-color); color: var(--bg-white); }
+        .action-button-icon { padding: 5px 8px; margin: 2px; }
+
+        /* TABLES */
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.9em; }
+        th, td { border: 1px solid #ddd; padding: 10px 8px; text-align: left; }
+        th { background-color: #f2f2f2; font-weight: bold; }
+        .cover-thumb { width: 40px; height: 50px; object-fit: cover; border-radius: 3px; }
+
+        /* HEADER SIMPLE (TOP) */
+        header {
+            background-color: var(--secondary-color); color: var(--bg-white); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; box-sizing: border-box;
+        }
+
+        header h1 { margin: 0; font-size: 1.5em; color: var(--bg-white); }
+        
+        /* BOTTOM NAVIGATION */
+        .bottom-nav { display: flex; justify-content: space-around; align-items: center; position: fixed; bottom: 0; left: 0; right: 0; background-color: var(--bg-white); box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); height: 60px; z-index: 1000; }
+        .nav-item { color: var(--text-color); text-decoration: none; padding: 10px; text-align: center; }
+        .nav-item i { font-size: 1.5em; }
+        .nav-item.active { color: var(--secondary-color); }
+
+        /* MEDIA QUERIES */
+        @media (max-width: 600px) {
+            body { padding-top: 70px; }
+            main { padding: 10px; }
+        }
+    </style>
+</head>
+<body>
+    
+    <header>
+        <h1>Manajemen Stok Buku</h1>
+    </header>
+
+    <main>
+        <div class="card">
+            <h2>Tambah Stok/Buku Baru</h2>
+            <form id="add-stok-form">
+                <label for="new-kode">Kode Barang</label>
+                <input type="text" id="new-kode" required>
+
+                <label for="new-nama">Nama Barang</label>
+                <input type="text" id="new-nama" required>
+                
+                <label for="new-jenis">Jenis Barang</label>
+                <input type="text" id="new-jenis" required value="Buku Ajar">
+                
+                <div style="display: flex; gap: 10px;">
+                    <div style="flex-grow: 1;">
+                        <label for="new-edisi">Edisi</label>
+                        <input type="number" id="new-edisi" required min="1" value="1">
+                    </div>
+                    <div style="flex-grow: 1;">
+                        <label for="new-stok">Stok Awal</label>
+                        <input type="number" id="new-stok" required min="1" value="10">
+                    </div>
+                </div>
+
+                <label for="new-harga">Harga Jual</label>
+                <input type="number" id="new-harga" required min="10000" value="100000">
+
+                <label for="new-cover">URL Cover (Fiktif)</label>
+                <input type="text" id="new-cover" value="assets/img/placeholder.png">
+                
+                <button type="submit" class="btn-success">Tambah ke Katalog</button>
+            </form>
+        </div>
+        
+        <div class="card">
+            <h2>Katalog Saat Ini</h2>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Kode</th>
+                            <th>Cover</th>
+                            <th>Nama Barang</th>
+                            <th>Jenis</th>
+                            <th class="text-center">Edisi</th>
+                            <th class="text-center">Stok</th>
+                            <th class="text-right">Harga</th>
+                            <th class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="katalog-body">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item"><i class="fas fa-book"></i></a>
+        <a href="stok.html" class="nav-item active"><i class="fas fa-warehouse"></i></a>
+        <a href="tracking.html" class="nav-item"><i class="fas fa-truck"></i></a>
+        <a href="#" id="logout-btn-nav" class="nav-item"><i class="fas fa-undo-alt"></i></a>
+    </nav>
+
+    <script src="js/data.js"></script>
+    <script src="js/stok.js"></script>
+</body>
+</html>

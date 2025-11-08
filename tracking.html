@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Book Zaki - Tracking</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* Definisi Variabel Warna */
+        :root {
+            --primary-color: #ffc107; --secondary-color: #008080; --text-color: #333;
+            --bg-white: #ffffff; --bg-light: #f4f4f4; --success-color: #28a745; --danger-color: #dc3545; --warning-color: #ffc107;
+        }
+
+        /* GLOBAL STYLES */
+        body { font-family: Arial, sans-serif; background-color: var(--bg-light); color: var(--text-color); margin: 0; padding-top: 80px; padding-bottom: 70px; min-height: 100vh; }
+        main { padding: 20px; }
+        h1, h2, h3 { color: var(--secondary-color); margin-top: 0; }
+        .card { background-color: var(--bg-white); padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); }
+        
+        /* INPUTS AND FORMS */
+        input[type="text"] { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 1em; }
+        
+        /* BUTTONS */
+        .btn-primary { padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; margin-top: 10px; background-color: var(--primary-color); color: var(--text-color); }
+        
+        /* TABLES */
+        .detail-table th, .detail-table td { border: none; padding: 5px 0; }
+        .detail-table th { width: 40%; font-weight: normal; text-align: left; }
+
+        /* HEADER SIMPLE (TOP) */
+        header {
+            background-color: var(--secondary-color); color: var(--bg-white); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; box-sizing: border-box;
+        }
+
+        header h1 { margin: 0; font-size: 1.5em; color: var(--bg-white); }
+        
+        /* TRACKING STYLES */
+        .tracking-summary { background-color: #e9ecef; padding: 15px; border-radius: 5px; margin-bottom: 15px; }
+        .progress-container { background-color: #f3f3f3; border-radius: 10px; margin-top: 10px; overflow: hidden; position: relative; height: 30px; }
+        .progress-bar { height: 100%; width: 0%; background-color: var(--secondary-color); transition: width 0.5s ease; }
+        .progress-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: var(--text-color); font-weight: bold; font-size: 0.9em; }
+        .timeline-list { list-style: none; padding: 0; border-left: 2px solid #ccc; margin-left: 10px; }
+        .timeline-list li { padding-left: 15px; padding-bottom: 10px; position: relative; margin-bottom: 10px; }
+        .timeline-list li::before { content: ''; position: absolute; left: -7px; top: 0; width: 10px; height: 10px; border-radius: 50%; background-color: var(--secondary-color); border: 2px solid var(--bg-white); }
+        .hidden { display: none; }
+
+        /* BOTTOM NAVIGATION */
+        .bottom-nav { display: flex; justify-content: space-around; align-items: center; position: fixed; bottom: 0; left: 0; right: 0; background-color: var(--bg-white); box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); height: 60px; z-index: 1000; }
+        .nav-item { color: var(--text-color); text-decoration: none; padding: 10px; text-align: center; }
+        .nav-item i { font-size: 1.5em; }
+        .nav-item.active { color: var(--secondary-color); }
+
+        /* MEDIA QUERIES */
+        @media (max-width: 600px) {
+            body { padding-top: 70px; }
+            main { padding: 10px; }
+        }
+    </style>
+</head>
+<body>
+    
+    <header>
+        <h1>Tracking Pengiriman</h1>
+    </header>
+
+    <main>
+        <div class="card">
+            <form id="tracking-form">
+                <label for="do-number">Nomor Dokumen Order (DO)</label>
+                <input type="text" id="do-number" placeholder="Contoh: 20230012" required>
+                <button type="submit" class="btn-primary">Lacak Sekarang</button>
+            </form>
+        </div>
+
+        <div class="card hidden" id="tracking-result">
+            <h2>Hasil Pelacakan <span id="do-number-display"></span></h2>
+            
+            <div class="tracking-summary">
+                <p>Status Saat Ini: <strong id="delivery-status"></strong></p>
+                <div class="progress-container">
+                    <div class="progress-bar" id="progress-bar"></div>
+                    <span class="progress-text" id="progress-text"></span>
+                </div>
+            </div>
+
+            <table class="detail-table">
+                <tr><th>Pemesan</th><td id="pemesan-name"></td></tr>
+                <tr><th>Ekspedisi</th><td id="detail-ekspedisi"></td></tr>
+                <tr><th>Tanggal Kirim</th><td id="detail-tgl-kirim"></td></tr>
+                <tr><th>Jenis Paket</th><td id="detail-jenis-paket"></td></tr>
+                <tr><th>Total Bayar</th><td id="detail-total-bayar"></td></tr>
+            </table>
+
+            <h3>Riwayat Perjalanan</h3>
+            <ul class="timeline-list" id="perjalanan-list">
+                </ul>
+        </div>
+        
+        <div class="card hidden" id="no-result">
+            <h2 style="color: var(--danger-color);">Nomor DO Tidak Ditemukan</h2>
+            <p>Mohon pastikan nomor yang Anda masukkan benar.</p>
+        </div>
+    </main>
+    
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item"><i class="fas fa-book"></i></a>
+        <a href="stok.html" class="nav-item"><i class="fas fa-warehouse"></i></a>
+        <a href="tracking.html" class="nav-item active"><i class="fas fa-truck"></i></a>
+        <a href="#" id="logout-btn-nav" class="nav-item"><i class="fas fa-undo-alt"></i></a>
+    </nav>
+
+    <script src="js/data.js"></script>
+    <script src="js/tracking.js"></script>
+</body>
+</html>
